@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Справочник грибов | Грибной определитель</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="/">Грибной определитель</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/guide">Справочник</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/predict">Определить гриб</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="text-center mb-5">Справочник грибов</h1>
+        
+        <div class="row">
+            <!-- Фильтр по категориям -->
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        Фильтры
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="searchInput" class="form-label">Поиск</label>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Название гриба">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Категория</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="edibleCheck" checked>
+                                <label class="form-check-label" for="edibleCheck">Съедобные</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="poisonousCheck" checked>
+                                <label class="form-check-label" for="poisonousCheck">Ядовитые</label>
+                            </div>
+                        </div>
+                        <button class="btn btn-success w-100" onclick="filterMushrooms()">Применить</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Список грибов -->
+            <div class="col-md-9">
+                <div class="row" id="mushroomList">
+                    <!-- Пример карточки гриба -->
+                    <div class="col-lg-4 col-md-6 mb-4 mushroom-card edible">
+                        <div class="card h-100">
+                            <img src="/static/images/agaricus.jpg" class="card-img-top" alt="Шампиньон">
+                            <div class="card-body">
+                                <h5 class="card-title">Шампиньон обыкновенный</h5>
+                                <p class="card-text"><strong>Съедобность:</strong> Съедобный</p>
+                                <p class="card-text"><small>Шляпка 5-10 см, белая или кремовая. Ножка ровная с кольцом.</small></p>
+                                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#mushroomModal" 
+                                    onclick="showMushroomDetails('Шампиньон обыкновенный', 'Съедобный', 'Agaricus campestris', 'Шляпка 5-10 см, сначала полушаровидная, затем распростёртая, белая или кремовая. Пластинки свободные, сначала розовые, затем тёмно-коричневые. Ножка ровная, с кольцом. Мякоть белая, на срезе розовеет.', 'Луга, пастбища, сады', 'Лето-осень')">
+                                    Подробнее
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Еще примеры грибов -->
+                    <div class="col-lg-4 col-md-6 mb-4 mushroom-card poisonous">
+                        <div class="card h-100">
+                            <img src="/static/images/amanita.jpg" class="card-img-top" alt="Мухомор">
+                            <div class="card-body">
+                                <h5 class="card-title">Мухомор красный</h5>
+                                <p class="card-text"><strong>Съедобность:</strong> Ядовитый</p>
+                                <p class="card-text"><small>Характерная красная шляпка с белыми хлопьями. Очень ядовит.</small></p>
+                                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#mushroomModal"
+                                    onclick="showMushroomDetails('Мухомор красный', 'Ядовитый', 'Amanita muscaria', 'Шляпка 8-20 см, ярко-красная или оранжево-красная, с белыми или желтоватыми хлопьями. Пластинки белые, свободные. Ножка белая, с кольцом и вольвой. Мякоть белая, под кожицей желтоватая.', 'Хвойные и лиственные леса', 'Лето-осень')">
+                                    Подробнее
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Добавьте больше грибов по аналогии -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно с детальной информацией -->
+    <div class="modal fade" id="mushroomModal" tabindex="-1" aria-labelledby="mushroomModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="mushroomModalLabel">Детальная информация</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <img id="modalMushroomImage" src="" class="img-fluid rounded" alt="Гриб">
+                        </div>
+                        <div class="col-md-6">
+                            <h4 id="modalMushroomName"></h4>
+                            <p><strong>Съедобность:</strong> <span id="modalMushroomEdibility" class="badge"></span></p>
+                            <p><strong>Латинское название:</strong> <span id="modalMushroomLatin"></span></p>
+                            <p><strong>Описание:</strong> <span id="modalMushroomDescription"></span></p>
+                            <p><strong>Места произрастания:</strong> <span id="modalMushroomHabitat"></span></p>
+                            <p><strong>Сезон:</strong> <span id="modalMushroomSeason"></span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container text-center">
+            <p>© 2023 Грибной определитель. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Функция фильтрации грибов
+        function filterMushrooms() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const showEdible = document.getElementById('edibleCheck').checked;
+            const showPoisonous = document.getElementById('poisonousCheck').checked;
+            
+            document.querySelectorAll('.mushroom-card').forEach(card => {
+                const name = card.querySelector('.card-title').textContent.toLowerCase();
+                const isEdible = card.classList.contains('edible');
+                
+                const matchesSearch = name.includes(searchText);
+                const matchesCategory = (isEdible && showEdible) || (!isEdible && showPoisonous);
+                
+                card.style.display = (matchesSearch && matchesCategory) ? 'block' : 'none';
+            });
+        }
+        
+        // Функция показа деталей гриба
+        function showMushroomDetails(name, edibility, latin, description, habitat, season) {
+            document.getElementById('modalMushroomName').textContent = name;
+            
+            const edibilityBadge = document.getElementById('modalMushroomEdibility');
+            edibilityBadge.textContent = edibility;
+            edibilityBadge.className = 'badge ' + (edibility === 'Съедобный' ? 'bg-success' : 'bg-danger');
+            
+            document.getElementById('modalMushroomLatin').textContent = latin;
+            document.getElementById('modalMushroomDescription').textContent = description;
+            document.getElementById('modalMushroomHabitat').textContent = habitat;
+            document.getElementById('modalMushroomSeason').textContent = season;
+            
+            // Установка изображения (можно добавить логику для разных грибов)
+            document.getElementById('modalMushroomImage').src = `/static/images/${name.split(' ')[0].toLowerCase()}.jpg`;
+        }
+    </script>
+</body>
+</html>

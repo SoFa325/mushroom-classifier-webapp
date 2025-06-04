@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Определение грибов</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav>
+        <a href="/">Главная</a>
+        <a href="/guide">Справочник</a>
+        <a href="/predict">Определить гриб</a>
+    </nav>
+    
+    <h1>Определение вида гриба</h1>
+    
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required>
+        <button type="submit">Определить</button>
+    </form>
+    
+    {% if prediction %}
+    <div class="result">
+        <h2>Результат:</h2>
+        <img src="{{ image_path }}" width="300">
+        <p>Это: <strong>{{ prediction }}</strong></p>
+    </div>
+    {% endif %}
+</body>
+</html>

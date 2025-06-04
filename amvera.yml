@@ -1,0 +1,13 @@
+version: 1
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - FLASK_ENV=production
+    deploy:
+      resources:
+        memory: 1024M
+        cpu: 0.5
