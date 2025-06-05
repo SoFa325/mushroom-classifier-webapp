@@ -46,6 +46,5 @@ app/static/uploads/*
 !app/static/uploads/.gitkeep
 
 # Model weights
-*.pth
 *.pt
 *.h5
