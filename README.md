@@ -1,5 +1,4 @@
 # mushroom-classifier-webapp
-# README
 
 ## Описание приложения
 
