@@ -17,6 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 COPY app/classes.txt /app/app/classes.txt
 COPY app/model_loader.py /app/app/model_loader.py
+COPY model_weights.pth /app/model_weights.pth
 
 # Запуск приложения
 CMD gunicorn --bind 0.0.0.0:$PORT --workers 4 --threads 2 app.main:app

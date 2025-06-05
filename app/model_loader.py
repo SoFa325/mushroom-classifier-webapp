@@ -5,7 +5,7 @@ from PIL import Image
 import os
 from api.models import MushroomClassifier
 
-def load_class_names(file_path="app/classes.txt"):
+def load_class_names(file_path="classes.txt"):
     """Загружает список классов из текстового файла"""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
@@ -18,10 +18,11 @@ def load_class_names(file_path="app/classes.txt"):
 # Пример использования:
 if __name__ == "__main__":
     # Пример списка классов (должен соответствовать обученной модели)
-   
+    class_names=load_class_names()
+    assert len(class_names) == 211, f"Ожидается 211 классов, получено {len(class_names)}"
     classifier = MushroomClassifier(
-        model_path="model_weights.pth",
-        class_names=load_class_names()
+        model_path="app/model_weights.pth",
+        class_names = class_names 
     )
     
     # Тестовый пример
