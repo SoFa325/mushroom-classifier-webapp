@@ -15,6 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Копируем проект
 COPY . .
+COPY app/classes.txt /app/app/classes.txt
 
 # Запуск приложения
 CMD gunicorn --bind 0.0.0.0:$PORT --workers 4 --threads 2 app.main:app

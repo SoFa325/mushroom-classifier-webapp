@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
-from model_loader import MushroomClassifier
+from app.model_loader import MushroomClassifier
 import torch
 from PIL import Image
 from app.api.endpoints import api_blueprint

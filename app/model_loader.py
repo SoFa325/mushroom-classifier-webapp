@@ -4,11 +4,21 @@ from torchvision import transforms, models
 from PIL import Image
 import os
 
+def load_class_names(file_path="app/classes.txt"):
+    """Загружает список классов из текстового файла"""
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            class_names = [line.strip() for line in f if line.strip()]
+        return class_names
+    except FileNotFoundError:
+        print(f"Warning: Class names file not found at {file_path}, using defaults")
+        return []
+
 class MushroomClassifier:
-    def __init__(self, model_path, class_names):
+    def __init__(self, model_path, class_file="app/classes.txt"):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.class_names = class_names
-        self.num_classes = len(class_names)
+        self.class_names = load_class_names(class_file)
+        self.num_classes = len(self.class_names)
         
         # Инициализация модели (как в оригинальном обучении)
         self.model = models.convnext_base(pretrained=False)
