@@ -12,11 +12,11 @@
     </nav>
     
     <h1>Определение вида гриба</h1>
-    
-    <form method="post" enctype="multipart/form-data">
+
+    <form method="POST" enctype="multipart/form-data">
         <input type="file" name="file" accept="image/*" required>
-        <button type="submit">Определить</button>
-    </form>
+        <button type="submit">Определить гриб</button>
+      </form>
     
     {% if prediction %}
     <div class="result">
