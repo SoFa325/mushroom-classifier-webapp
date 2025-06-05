@@ -6,11 +6,3 @@ cd mushroom-classifier
 python -m venv venv
 # Установка Python зависимостей
 pip install -r requirements.txt
-
-# Скачивание модели (пример)
-if [ ! -f "app/model_weights.pth" ]; then
-    wget -O app/model_weights.pth "https://your-model-storage.com/model_weights.pth"
-fi
-
-# Создание необходимых директорий
-mkdir -p app/static/uploads
