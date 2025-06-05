@@ -14,7 +14,7 @@ class MushroomClassifier:
 
     def _load_model(self):
         """Загрузка модели с весами"""
-        model_path = os.path.join(os.path.dirname(__file__), 'model_weights.pth')
+        model_path = os.path.join(os.path.dirname(__file__), '../model_weights.pth')
         
         # Загрузка state_dict с обработкой DataParallel
         state_dict = torch.load(model_path, map_location=self.device)
@@ -33,14 +33,15 @@ class MushroomClassifier:
         return model
 
     def _load_class_names(self):
-        """Загрузка названий классов"""
         try:
-            csv_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'classes.csv')
-            df = pd.read_csv(csv_path)
-            return df.columns[1:].tolist()  # Предполагаем, что первый столбец - filename
+            txt_path = os.path.join(os.path.dirname(__file__), '..', 'classes.txt')
+            with open(txt_path, 'r', encoding='utf-8') as f:
+                class_names = [line.strip() for line in f if line.strip()]
+            return class_names
         except Exception as e:
             print(f"Error loading class names: {e}")
-            return [f"class_{i}" for i in range(211)]  # Fallback
+            # Фоллбек — генерация заглушек
+            return [f"class_{i}" for i in range(211)]
 
     def _get_transforms(self):
         """Трансформации для изображений"""
@@ -50,7 +51,7 @@ class MushroomClassifier:
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
 
-    def predict_image(self, image_path, top_k=5):
+    def predict_image(self, image_path, top_k=2):
         """Предсказание с возвратом топ-k классов"""
         try:
             image = Image.open(image_path).convert('RGB')
