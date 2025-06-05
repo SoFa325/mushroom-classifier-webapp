@@ -1,29 +1,198 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Определение грибов</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Определить гриб | Грибной определитель</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .prediction-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #28a745;
+        }
+        .prediction-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .probability-bar {
+            height: 24px;
+            border-radius: 4px;
+            background: #e9ecef;
+            overflow: hidden;
+        }
+        .upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            border-color: #28a745;
+            background-color: #f8f9fa;
+        }
+        #imagePreview {
+            max-height: 400px;
+            display: none;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
-    <nav>
-        <a href="/">Главная</a>
-        <a href="/guide">Справочник</a>
-        <a href="/predict">Определить гриб</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="/">Грибной определитель</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/guide">Справочник</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/predict">Определить гриб</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </nav>
-    
-    <h1>Определение вида гриба</h1>
 
-    <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" accept="image/*" required>
-        <button type="submit">Определить гриб</button>
-      </form>
-    
-    {% if prediction %}
-    <div class="result">
-        <h2>Результат:</h2>
-        <img src="{{ image_path }}" width="300">
-        <p>Это: <strong>{{ prediction }}</strong></p>
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="mb-4 text-center">Определить вид гриба</h1>
+                
+                <!-- Форма загрузки изображения -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form id="uploadForm" action="/predict" method="POST" enctype="multipart/form-data">
+                            <div class="upload-area mb-3" id="uploadArea">
+                                <i class="bi bi-cloud-arrow-up fs-1 text-muted"></i>
+                                <h5 class="my-3">Перетащите сюда изображение или нажмите для выбора</h5>
+                                <p class="text-muted">Поддерживаются форматы: JPG, PNG, JPEG</p>
+                                <input type="file" id="fileInput" name="file" accept="image/*" class="d-none" required>
+                                <button type="button" class="btn btn-outline-success" onclick="document.getElementById('fileInput').click()">
+                                    Выбрать файл
+                                </button>
+                            </div>
+                            <div class="text-center mb-3">
+                                <img id="imagePreview" class="img-fluid rounded" alt="Предпросмотр">
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success btn-lg" id="submitBtn" disabled>
+                                    <i class="bi bi-search"></i> Определить вид
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Блок результатов (появляется после отправки) -->
+                {% if image_path %}
+                <div class="card mb-4" id="resultsSection">
+                    <div class="card-body text-center">
+                        <h2 class="mb-4">Результаты определения</h2>
+                        
+                        <img src="{{ url_for('static', filename='uploads/' + image_path.split('/')[-1]) }}" 
+                             class="img-fluid rounded mb-4" 
+                             id="resultImage"
+                             alt="Определяемое изображение">
+                        
+                        <h3 class="mb-3">Вероятные виды:</h3>
+                        
+                        <div class="row g-3">
+                            {% for pred in predictions %}
+                            <div class="col-md-6">
+                                <div class="prediction-card card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ pred.class }}</h5>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Вероятность:</span>
+                                            <strong>{{ "%.1f"|format(pred.probability * 100) }}%</strong>
+                                        </div>
+                                        <div class="probability-bar">
+                                            <div class="progress-bar bg-success" 
+                                                 style="width: {{ pred.probability * 100 }}%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
-    {% endif %}
+
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container text-center">
+            <p>© 2023 Грибной определитель. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Обработка выбора файла
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const imagePreview = document.getElementById('imagePreview');
+        const submitBtn = document.getElementById('submitBtn');
+        const uploadForm = document.getElementById('uploadForm');
+
+        // Превью изображения
+        fileInput.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    uploadArea.style.display = 'none';
+                    submitBtn.disabled = false;
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('border-success');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('border-success');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('border-success');
+            
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+            }
+        });
+
+        // Показываем блок результатов после отправки формы
+        {% if image_path %}
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('resultsSection').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+        {% endif %}
+    </script>
 </body>
 </html>

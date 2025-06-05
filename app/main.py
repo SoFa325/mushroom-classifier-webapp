@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
-from model_loader import MushroomClassifier
+from model.model_loader import MushroomClassifier
 
 def create_app():
     app = Flask(__name__)

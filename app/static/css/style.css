@@ -43,3 +43,17 @@ body {
     width: 100%;
     object-fit: cover;
 }
+
+/* Для повторного использования стилей prediction-card */
+.prediction-card {
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--bs-success);
+    margin-bottom: 1rem;
+}
+
+.probability-bar {
+    height: 24px;
+    border-radius: 4px;
+    background-color: #e9ecef;
+    overflow: hidden;
+}
