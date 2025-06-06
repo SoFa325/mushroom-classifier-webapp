@@ -10,10 +10,7 @@ from app.model.model_loader import MushroomClassifier
 def real_classifier():
     # Пути относительно корня проекта
     root = Path(__file__).parent.parent.parent
-    return MushroomClassifier(
-        model_path=root / "app" / "model_weights.pth",
-        classes_path=root / "app" / "classes.txt"
-    )
+    return MushroomClassifier()
 
 # Фикстура с тестовым изображением
 @pytest.fixture
