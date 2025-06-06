@@ -5,6 +5,8 @@ on: [push, pull_request]
 jobs:
   test-and-run:
     runs-on: ubuntu-latest
+    with:
+        lfs: true  
     strategy:
       matrix:
         python-version: ["3.8"]
@@ -27,12 +29,16 @@ jobs:
       run: |
         python -m venv venv
         source venv/bin/activate
+    - name: Download model (alternative)
+      run: |
+        wget https://github.com/SoFa325/mushroom-classifier-webapp/raw/refs/heads/main/app/model_weights.pth
+      if: false  
 
     - name: Upgrade pip
       run: |
         pip install --upgrade pip
       continue-on-error: true
-      
+
     - name: Install project in editable mode
       run: |
         pip install -e .
