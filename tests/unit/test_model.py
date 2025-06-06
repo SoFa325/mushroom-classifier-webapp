@@ -2,6 +2,7 @@ import pytest
 import torch
 import numpy as np
 from PIL import Image
+import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 from app.model.model_loader import MushroomClassifier
