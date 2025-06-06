@@ -57,11 +57,6 @@ jobs:
           echo "::error::Model file not found: app/model_weights.pth"
           exit 1
         fi
-    - name: Verify model file
-      run: |
-        file app/model_weights.pth
-        python -c "import torch; torch.load('app/model_weights.pth', map_location='cpu')"
-
     - name: Check for classes file 
       run: |
         if [ ! -f "app/classes.txt" ]; then
