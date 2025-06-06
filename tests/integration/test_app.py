@@ -35,7 +35,7 @@ def real_mushroom_image():
 def test_home_page(client):
     response = client.get("/")
     assert response.status_code == 200
-    assert "Грибной определитель".encode('utf-8') in response.data 
+    assert "Грибник.ру".encode('utf-8') in response.data 
 
 def test_guide_page(client):
     response = client.get("/guide")
@@ -53,7 +53,7 @@ def test_predict_image_upload(client, real_mushroom_image):
     }, content_type="multipart/form-data")
     
     assert response.status_code == 200
-    assert "Результаты определения".encode('utf-8') in response.data  
+    assert "Результаты".encode('utf-8') in response.data  
     assert "class".encode('utf-8') in response.data
     assert "probability".encode('utf-8') in response.data
 

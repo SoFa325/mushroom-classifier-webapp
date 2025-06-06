@@ -98,7 +98,7 @@ def main():
     
     # Запускаем приложение
     print("\n✅ Тесты успешно пройдены! Запускаем приложение...")
-    subprocess.run([python_path, "app/main.py"])
+    subprocess.run([python_path, "-m", "app.main"])
 
 if __name__ == "__main__":
     main()
