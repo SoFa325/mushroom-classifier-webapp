@@ -4,6 +4,8 @@ from torchvision import models, transforms
 from PIL import Image
 from collections import OrderedDict
 import os
+import json
+from pathlib import Path
 
 class MushroomClassifier:
     def __init__(self):
@@ -11,6 +13,15 @@ class MushroomClassifier:
         self.model = self._load_model()
         self.class_names = self._load_class_names()
         self.transform = self._get_transforms()
+        self.russian_names = self._load_russian_names()
+    
+    def _load_russian_names(self):
+        path = Path(__file__).parent.parent / 'mushroom_names.json'
+        with open(path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    
+    def get_russian_name(self, latin_name):
+        return self.russian_names.get(latin_name, latin_name)
 
     def _load_model(self):
         """Загрузка модели с весами"""
@@ -63,7 +74,7 @@ class MushroomClassifier:
 
             top_indices = probs.argsort()[-top_k:][::-1]
             return [
-                {"class": self.class_names[i], "probability": float(probs[i])} 
+                {"class": self.get_russian_name(self.class_names[i]), "probability": float(probs[i])} 
                 for i in top_indices
             ]
         except Exception as e:

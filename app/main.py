@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
-from model.model_loader import MushroomClassifier
+from app.model.model_loader import MushroomClassifier
 
 def create_app():
     app = Flask(__name__)
-    app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static')
+    app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static',"uploads")
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     # Ваши настройки и роуты здесь
     @app.route('/')
@@ -28,7 +28,7 @@ def create_app():
             
             if file:
                 filename = secure_filename(file.filename)
-                filepath = os.path.join(app.config['UPLOAD_FOLDER'], "uploads",filename)
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'],filename)
                 file.save(filepath)
                 
                 # Получаем предсказания

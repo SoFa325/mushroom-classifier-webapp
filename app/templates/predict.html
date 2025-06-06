@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Результат определения гриба | Грибной определитель</title>
+    <title>Результат классификации | Грибник.ру</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
@@ -48,7 +48,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
         <div class="container">
-            <a class="navbar-brand" href="/">Грибной определитель</a>
+            <a class="navbar-brand" href="/">Грибник.ру</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -102,7 +102,7 @@
                 {% if image_path %}
                 <div class="card mb-4" id="resultsSection">
                     <div class="card-body">
-                        <h2 class="mb-4 text-center">Результаты определения</h2>
+                        <h2 class="mb-4 text-center">Результаты</h2>
                         
                         <div class="row">
                             <!-- Изображение -->
@@ -122,11 +122,11 @@
                                 
                                 <div class="list-group">
                                     {% for pred in predictions %}
-                                    <div class="list-group-item {% if 'poisonous' in pred.class.lower() %}poisonous{% else %}edible{% endif %} mb-2">
+                                    <div class="list-group-item {% if '(ядовитый)' in pred.class.lower() %}Ядовитый{% else %}Съедобный{% endif %} mb-2">
                                         <div class="d-flex w-100 justify-content-between">
                                             <h5 class="mb-1">{{ pred.class }}</h5>
-                                            <span class="toxicity-badge {% if 'poisonous' in pred.class.lower() %}bg-danger{% else %}bg-success{% endif %} text-white">
-                                                {% if 'poisonous' in pred.class.lower() %}
+                                            <span class="toxicity-badge {% if '(ядовитый)' in pred.class.lower() %}bg-danger{% else %}bg-success{% endif %} text-white">
+                                                {% if '(ядовитый)' in pred.class.lower() %}
                                                     Ядовитый
                                                 {% else %}
                                                     Съедобный
@@ -151,7 +151,7 @@
 
     <footer class="bg-dark text-white mt-5 py-4">
         <div class="container text-center">
-            <p>Грибной детектор</p>
+            <p>© 2025 Грибник.ру. Все права грибов защищены.</p>
         </div>
     </footer>
 
