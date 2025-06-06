@@ -2,6 +2,7 @@ import pytest
 import os
 from pathlib import Path
 from io import BytesIO
+sys.path.append(str(Path(__file__).parent.parent.parent))
 from app.main import create_app
 from werkzeug.datastructures import FileStorage
 

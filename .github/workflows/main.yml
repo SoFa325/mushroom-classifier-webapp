@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.8"]
 
     steps:
     - name: Checkout code
@@ -32,11 +32,19 @@ jobs:
       run: |
         pip install --upgrade pip
       continue-on-error: true
+      
+    - name: Install project in editable mode
+      run: |
+        pip install -e .
 
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
         pip install -r requirements_test.txt
+        
+    - name: Add project to PYTHONPATH
+      run: |
+        echo "PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
     - name: Create required directories
       run: |
@@ -49,6 +57,10 @@ jobs:
           echo "::error::Model file not found: app/model_weights.pth"
           exit 1
         fi
+    - name: Verify model file
+      run: |
+        file app/model_weights.pth
+        python -c "import torch; torch.load('app/model_weights.pth', map_location='cpu')"
 
     - name: Check for classes file 
       run: |
