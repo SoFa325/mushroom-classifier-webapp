@@ -5,7 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Справочник грибов | Грибник.ру</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .mushroom-card {
+            transition: transform 0.2s;
+        }
+        .mushroom-card:hover {
+            transform: translateY(-5px);
+        }
+        .badge-edible {
+            background-color: #28a745;
+        }
+        .badge-poisonous {
+            background-color: #dc3545;
+        }
+        #loadingSpinner {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
@@ -33,92 +49,53 @@
     <div class="container mt-5">
         <h1 class="text-center mb-5">Справочник грибов</h1>
         
-        <div class="row">
-            <!-- Фильтр по категориям -->
-            <div class="col-md-3 mb-4">
-                <div class="card">
-                    <div class="card-header bg-success text-white">
-                        Фильтры
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label for="searchInput" class="form-label">Поиск</label>
-                            <input type="text" class="form-control" id="searchInput" placeholder="Название гриба">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Категория</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="edibleCheck" checked>
-                                <label class="form-check-label" for="edibleCheck">Съедобные</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="poisonousCheck" checked>
-                                <label class="form-check-label" for="poisonousCheck">Ядовитые</label>
-                            </div>
-                        </div>
-                        <button class="btn btn-success w-100" onclick="filterMushrooms()">Применить</button>
-                    </div>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Поиск по названию...">
+                    <button class="btn btn-success" onclick="filterMushrooms()">Найти</button>
                 </div>
             </div>
-            
-            <!-- Список грибов -->
-            <div class="col-md-9">
-                <div class="row" id="mushroomList">
-                    <!-- Пример карточки гриба -->
-                    <div class="col-lg-4 col-md-6 mb-4 mushroom-card edible">
-                        <div class="card h-100">
-                            <img src="/static/images/agaricus.jpg" class="card-img-top" alt="Шампиньон">
-                            <div class="card-body">
-                                <h5 class="card-title">Шампиньон обыкновенный</h5>
-                                <p class="card-text"><strong>Съедобность:</strong> Съедобный</p>
-                                <p class="card-text"><small>Шляпка 5-10 см, белая или кремовая. Ножка ровная с кольцом.</small></p>
-                                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#mushroomModal" 
-                                    onclick="showMushroomDetails('Шампиньон обыкновенный', 'Съедобный', 'Agaricus campestris', 'Шляпка 5-10 см, сначала полушаровидная, затем распростёртая, белая или кремовая. Пластинки свободные, сначала розовые, затем тёмно-коричневые. Ножка ровная, с кольцом. Мякоть белая, на срезе розовеет.', 'Луга, пастбища, сады', 'Лето-осень')">
-                                    Подробнее
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Еще примеры грибов -->
-                    <div class="col-lg-4 col-md-6 mb-4 mushroom-card poisonous">
-                        <div class="card h-100">
-                            <img src="/static/images/amanita.jpg" class="card-img-top" alt="Мухомор">
-                            <div class="card-body">
-                                <h5 class="card-title">Мухомор красный</h5>
-                                <p class="card-text"><strong>Съедобность:</strong> Ядовитый</p>
-                                <p class="card-text"><small>Характерная красная шляпка с белыми хлопьями. Очень ядовит.</small></p>
-                                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#mushroomModal"
-                                    onclick="showMushroomDetails('Мухомор красный', 'Ядовитый', 'Amanita muscaria', 'Шляпка 8-20 см, ярко-красная или оранжево-красная, с белыми или желтоватыми хлопьями. Пластинки белые, свободные. Ножка белая, с кольцом и вольвой. Мякоть белая, под кожицей желтоватая.', 'Хвойные и лиственные леса', 'Лето-осень')">
-                                    Подробнее
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+            <div class="col-md-6">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="edibleCheck" checked>
+                    <label class="form-check-label" for="edibleCheck">Съедобные</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="poisonousCheck" checked>
+                    <label class="form-check-label" for="poisonousCheck">Ядовитые</label>
                 </div>
             </div>
         </div>
+        
+        <div class="text-center mb-3">
+            <div class="spinner-border text-success" id="loadingSpinner"></div>
+        </div>
+        
+        <div class="row" id="mushroomList">
+            <!-- Карточки грибов будут загружены через JavaScript -->
+        </div>
     </div>
 
-    <div class="modal fade" id="mushroomModal" tabindex="-1" aria-labelledby="mushroomModalLabel" aria-hidden="true">
+    <!-- Модальное окно с деталями -->
+    <div class="modal fade" id="mushroomModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="mushroomModalLabel">Детальная информация</h5>
+                    <h5 class="modal-title" id="modalTitle">Детальная информация</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-6">
-                            <img id="modalMushroomImage" src="" class="img-fluid rounded" alt="Гриб">
-                        </div>
-                        <div class="col-md-6">
-                            <h4 id="modalMushroomName"></h4>
-                            <p><strong>Съедобность:</strong> <span id="modalMushroomEdibility" class="badge"></span></p>
-                            <p><strong>Латинское название:</strong> <span id="modalMushroomLatin"></span></p>
-                            <p><strong>Описание:</strong> <span id="modalMushroomDescription"></span></p>
-                            <p><strong>Места произрастания:</strong> <span id="modalMushroomHabitat"></span></p>
-                            <p><strong>Сезон:</strong> <span id="modalMushroomSeason"></span></p>
+                        <div class="col-md-12">
+                            <h4 id="modalName"></h4>
+                            <p>
+                                <strong>Тип:</strong> 
+                                <span id="modalEdibility" class="badge"></span>
+                            </p>
+                            <a id="modalWikiLink" href="#" target="_blank" class="btn btn-outline-success">
+                                Читать на Википедии
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -131,13 +108,74 @@
 
     <footer class="bg-dark text-white mt-5 py-4">
         <div class="container text-center">
-            <p>© 2025 Грибник.ру. Все права грибов защищены.</p>
+            <p>© 2023 Грибник.ру. Все права защищены.</p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Функция фильтрации грибов
+        const mushroomsData = {};
+        
+        async function loadMushrooms() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+            const mushroomList = document.getElementById('mushroomList');
+            mushroomList.innerHTML = '';
+            
+            try {
+                const mushrooms = {{ mushrooms|tojson }};
+                
+                for (const [id, data] of Object.entries(mushrooms)) {
+                    const response = await fetch(`/api/mushroom/${id}`);
+                    const mushroom = await response.json();
+                    mushroomsData[id] = mushroom;
+                    
+                    const cardHtml = `
+                        <div class="col-lg-4 col-md-6 mb-4 mushroom-card ${mushroom.edible ? 'edible' : 'poisonous'}">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">${mushroom.name}</h5>
+                                    <p class="card-text">
+                                        <span class="badge ${mushroom.edible ? 'badge-edible' : 'badge-poisonous'}">
+                                            ${mushroom.edible ? 'Съедобный' : 'Ядовитый'}
+                                        </span>
+                                    </p>
+                                    <button class="btn btn-sm ${mushroom.edible ? 'btn-success' : 'btn-danger'}"
+                                            onclick="showMushroomDetails('${id}')"
+                                            data-bs-toggle="modal" data-bs-target="#mushroomModal">
+                                        Подробнее
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    mushroomList.innerHTML += cardHtml;
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки данных:', error);
+                mushroomList.innerHTML = `
+                    <div class="col-12 text-center text-danger">
+                        <p>Не удалось загрузить данные о грибах. Пожалуйста, попробуйте позже.</p>
+                    </div>
+                `;
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+        
+        function showMushroomDetails(mushroomId) {
+            const mushroom = mushroomsData[mushroomId];
+            if (!mushroom) return;
+            
+            document.getElementById('modalName').textContent = mushroom.name;
+            
+            const edibilityBadge = document.getElementById('modalEdibility');
+            edibilityBadge.textContent = mushroom.edible ? 'Съедобный' : 'Ядовитый';
+            edibilityBadge.className = 'badge ' + (mushroom.edible ? 'badge-edible' : 'badge-poisonous');
+            
+            document.getElementById('modalWikiLink').href = mushroom.wiki_url;
+        }
+        
         function filterMushrooms() {
             const searchText = document.getElementById('searchInput').value.toLowerCase();
             const showEdible = document.getElementById('edibleCheck').checked;
@@ -154,22 +192,10 @@
             });
         }
         
-        // Функция показа деталей гриба
-        function showMushroomDetails(name, edibility, latin, description, habitat, season) {
-            document.getElementById('modalMushroomName').textContent = name;
-            
-            const edibilityBadge = document.getElementById('modalMushroomEdibility');
-            edibilityBadge.textContent = edibility;
-            edibilityBadge.className = 'badge ' + (edibility === 'Съедобный' ? 'bg-success' : 'bg-danger');
-            
-            document.getElementById('modalMushroomLatin').textContent = latin;
-            document.getElementById('modalMushroomDescription').textContent = description;
-            document.getElementById('modalMushroomHabitat').textContent = habitat;
-            document.getElementById('modalMushroomSeason').textContent = season;
-            
-            // Установка изображения (можно добавить логику для разных грибов)
-            document.getElementById('modalMushroomImage').src = `/static/images/${name.split(' ')[0].toLowerCase()}.jpg`;
-        }
+        document.addEventListener('DOMContentLoaded', loadMushrooms);
+        document.getElementById('searchInput').addEventListener('input', filterMushrooms);
+        document.getElementById('edibleCheck').addEventListener('change', filterMushrooms);
+        document.getElementById('poisonousCheck').addEventListener('change', filterMushrooms);
     </script>
 </body>
 </html>

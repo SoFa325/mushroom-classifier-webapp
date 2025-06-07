@@ -13,10 +13,13 @@ def app():
     app = create_app()
     upload_folder = Path(__file__).parent.parent.parent / "app" / "static" / "uploads"
     upload_folder.mkdir(parents=True, exist_ok=True)  # Создаем папку для загрузок
+    wikiimage_folder = Path(__file__).parent.parent.parent / "app" / "static" / "wiki_images"
+    wikiimage_folder.mkdir(parents=True, exist_ok=True)  
     
     app.config.update({
         "TESTING": True,
-        "UPLOAD_FOLDER": upload_folder
+        "UPLOAD_FOLDER": upload_folder,
+        "IMAGE_CACHE" : wikiimage_folder
     })
     yield app
 
