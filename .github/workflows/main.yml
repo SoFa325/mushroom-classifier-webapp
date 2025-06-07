@@ -63,12 +63,6 @@ jobs:
           echo "::error::Model file not found: app/model_weights.pth"
           exit 1
         fi
-    - name: Check for classes file 
-      run: |
-        if [ ! -f "app/classes.txt" ]; then
-          echo "::error::Model file not found: app/model_weights.pth"
-          exit 1
-        fi
 
     - name: Run tests
       run: |

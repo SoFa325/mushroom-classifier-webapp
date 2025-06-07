@@ -15,7 +15,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Копируем проект
 COPY . .
-COPY app/classes.txt /app/app/classes.txt
 COPY app/model/model_loader.py /app/app/model/model_loader.py
 COPY app/model_weights.pth /app/app/model_weights.pth
 
