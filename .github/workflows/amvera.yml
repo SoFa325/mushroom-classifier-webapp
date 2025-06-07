@@ -1,0 +1,21 @@
+name: Deploy to Amvera
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Amvera CLI
+        run: |
+          pip install amvera-cli
+          
+      - name: Deploy
+        run: |
+          amvera login --token ${{ secrets.AMVERA_TOKEN }}
+          amvera deploy mushroom-classifier
+        env:
+          AMVERA_TOKEN: ${{ secrets.AMVERA_TOKEN }}
