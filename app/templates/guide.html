@@ -21,6 +21,20 @@
         #loadingSpinner {
             display: none;
         }
+        /* ✅ НОВЫЕ СТИЛИ для описания */
+        .description-text {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+        }
+        .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -77,7 +91,7 @@
         </div>
     </div>
 
-    <!-- Модальное окно с деталями -->
+    <!-- ✅ ИСПРАВЛЕННОЕ модальное окно с описанием -->
     <div class="modal fade" id="mushroomModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -93,9 +107,16 @@
                                 <strong>Тип:</strong> 
                                 <span id="modalEdibility" class="badge"></span>
                             </p>
-                            <a id="modalWikiLink" href="#" target="_blank" class="btn btn-outline-success">
-                                Читать на Википедии
-                            </a>
+                            <!-- ✅ ДОБАВЛЕН блок для описания -->
+                            <div class="description-text" id="modalDescription">
+                                <strong>Описание:</strong><br>
+                                <span id="descriptionText">Загрузка описания...</span>
+                            </div>
+                            <div class="mt-3">
+                                <a id="modalWikiLink" href="#" target="_blank" class="btn btn-outline-success">
+                                    Читать на Википедии
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -163,6 +184,7 @@
             }
         }
         
+        // ✅ ИСПРАВЛЕННАЯ функция отображения деталей
         function showMushroomDetails(mushroomId) {
             const mushroom = mushroomsData[mushroomId];
             if (!mushroom) return;
@@ -172,6 +194,16 @@
             const edibilityBadge = document.getElementById('modalEdibility');
             edibilityBadge.textContent = mushroom.edible ? 'Съедобный' : 'Ядовитый';
             edibilityBadge.className = 'badge ' + (mushroom.edible ? 'badge-edible' : 'badge-poisonous');
+            
+            // ✅ ДОБАВЛЕНО отображение описания
+            const descriptionElement = document.getElementById('descriptionText');
+            if (mushroom.description && mushroom.description !== "Не удалось загрузить описание") {
+                descriptionElement.textContent = mushroom.description;
+                document.getElementById('modalDescription').style.display = 'block';
+            } else {
+                descriptionElement.textContent = 'Описание временно недоступно';
+                document.getElementById('modalDescription').style.display = 'block';
+            }
             
             document.getElementById('modalWikiLink').href = mushroom.wiki_url;
         }

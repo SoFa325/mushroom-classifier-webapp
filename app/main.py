@@ -15,30 +15,41 @@ def create_app():
 
     def get_wiki_description(wiki_url):
         try:
-            response = requests.get(wiki_url, timeout=10)
+            response = requests.get(wiki_url, timeout=15)
+            response.raise_for_status()
             soup = BeautifulSoup(response.text, 'html.parser')
             
+            # Ищем основной контент
             content = soup.find('div', {'class': 'mw-parser-output'})
             if not content:
                 return "Не удалось загрузить описание"
             
-            # Удаляем ненужные элементы
-            for element in content.find_all(['table', 'div', 'span', 'img', 'sup']):
+            # Удаляем навигационные и служебные элементы (НЕ все div!)
+            for element in content.find_all(['table', 'span', 'img', 'sup', '.navbox', '.infobox']):
                 element.decompose()
             
-            # Берем первые 3 осмысленных абзаца
+            # Удаляем div с классами навбоксов и инфобоксов
+            for element in content.find_all('div', class_=['navbox', 'infobox', 'hatnote', 'dablink']):
+                element.decompose()
+            
+            # Берем первые 3-4 осмысленных абзаца
             paragraphs = []
-            for p in content.find_all('p', recursive=False):
+            for p in content.find_all('p'):
                 text = p.get_text().strip()
-                if text and len(text) > 50:  # Отсеиваем короткие/пустые абзацы
+                # Фильтруем абзацы с координатами и служебной информацией
+                if (text and len(text) > 30 and 
+                    not text.startswith('Координаты:') and
+                    not text.startswith('Commons:') and
+                    '°' not in text[:50]):  # Исключаем координаты
                     paragraphs.append(text)
                     if len(paragraphs) >= 3:
                         break
             
-            return ' '.join(paragraphs) or "Описание отсутствует"
+            result = ' '.join(paragraphs)
+            return result[:800] + '...' if len(result) > 800 else result or "Описание отсутствует"
         
         except Exception as e:
-            print(f"Error fetching description: {e}")
+            print(f"Error fetching description from {wiki_url}: {e}")
             return "Не удалось загрузить описание"
 
     @app.route('/')
@@ -57,7 +68,6 @@ def create_app():
         
         try:
             description = get_wiki_description(mushroom_data['url'])
-
             
             return jsonify({
                 "id": mushroom_id,
@@ -73,10 +83,10 @@ def create_app():
                 "name": mushroom_data['name'],
                 "edible": mushroom_data['edible'],
                 "description": "Не удалось загрузить информацию",
-                "image": "/static/test_images/what_is_grib.png",
                 "wiki_url": mushroom_data['url']
             })
-    @app.route('/predict', methods=['GET', 'POST'])  # Разрешаем оба метода
+
+    @app.route('/predict', methods=['GET', 'POST'])
     def predict():
         if request.method == 'POST':
             if 'file' not in request.files:
@@ -91,16 +101,15 @@ def create_app():
                 filepath = os.path.join(app.config['UPLOAD_FOLDER'],filename)
                 file.save(filepath)
                 
-                # Получаем предсказания
                 predictions = classifier.predict_image(filepath)
                 
                 return render_template('predict.html',
                                     image_path=filepath,
                                     predictions=predictions)
-        # GET-запрос: просто отображаем страницу с формой
         return render_template('predict.html')
     
     return app
-app = create_app()  # Важно для Amvera!
+
+app = create_app()
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
