@@ -1,12 +1,22 @@
-# amvera.yml
 runtime: python3.8
-entrypoint: gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 1 --threads 1 --timeout 120
+
+entrypoint: |
+  gunicorn --workers=1 --threads=2 --worker-class=gthread --timeout=30 --bind=0.0.0.0:5000 --preload app:app
 
 resources:
-  cpu: 1000m  # 1 ядро
-  memory: 1024Mi  # 1 ГБ RAM
+  cpu: 1000m 
+  memory: 2048Mi  
 
 env:
   - name: PYTHONPATH
     value: "/app"
-entrypoint: gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 2 --threads 2
+  - name: GUNICORN_CMD_ARGS
+    value: "--workers=1 --threads=2 --worker-class=gthread --timeout=30"
+
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 5000
+  initialDelaySeconds: 10
+  periodSeconds: 5

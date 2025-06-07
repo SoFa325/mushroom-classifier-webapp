@@ -7,6 +7,7 @@ from urllib.parse import urljoin
 import hashlib
 from mushroom_info import MUSHROOM_SPECIES
 from app.model.model_loader import MushroomClassifier
+import torch
 
 def create_app():
     app = Flask(__name__)
@@ -61,7 +62,16 @@ def create_app():
     @app.route('/guide')
     def guide():
         return render_template('guide.html', mushrooms=MUSHROOM_SPECIES)
+    
+    @app.after_request
+    def clear_cache(response):
+        torch.cuda.empty_cache()
+        return response
 
+    @app.route('/health')
+    def health():
+        return 'OK', 200
+    
     @app.route('/api/mushroom/<mushroom_id>')
     def get_mushroom_info(mushroom_id):
         mushroom_data = MUSHROOM_SPECIES.get(mushroom_id)

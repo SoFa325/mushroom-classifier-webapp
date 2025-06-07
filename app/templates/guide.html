@@ -196,20 +196,19 @@
             if (!mushroom) return;
             
             document.getElementById('modalName').textContent = mushroom.name;
-            document.getElementById('modalDescription').textContent = mushroom.description || "Описание отсутствует";
+            document.getElementById('descriptionText').textContent = mushroom.description || "Описание отсутствует";
             
             const edibilityBadge = document.getElementById('modalEdibility');
             edibilityBadge.textContent = mushroom.edible ? 'Съедобный' : 'Ядовитый';
             edibilityBadge.className = 'badge ' + (mushroom.edible ? 'badge-edible' : 'badge-poisonous');
             
-            const modalImage = document.getElementById('modalImage');
-            modalImage.src = mushroom.image;
-            modalImage.onerror = function() {
-                this.onerror = null;
-                this.src = '/static/test_images/what_is_grib.png';
-            };
+            const wikiLink = document.getElementById('modalWikiLink');
+            wikiLink.href = mushroom.wiki_url;
             
-            document.getElementById('modalWikiLink').href = mushroom.wiki_url;
+            wikiLink.onclick = function(e) {
+                e.stopPropagation();
+                return true;
+            };
         }
         
         function filterMushrooms() {
