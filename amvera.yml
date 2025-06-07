@@ -1,13 +1,12 @@
-version: 1
-services:
-  web:
-    build: .
-    ports:
-      - "8000:8000"
-    environment:
-      - PORT=8000
-      - FLASK_ENV=production
-    deploy:
-      resources:
-        memory: 1024M
-        cpu: 0.5
+# amvera.yml
+runtime: python3.8
+entrypoint: gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 1 --threads 1 --timeout 120
+
+resources:
+  cpu: 1000m  # 1 ядро
+  memory: 1024Mi  # 1 ГБ RAM
+
+env:
+  - name: PYTHONPATH
+    value: "/app"
+entrypoint: gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 2 --threads 2
