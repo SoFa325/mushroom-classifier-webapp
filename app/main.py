@@ -11,7 +11,9 @@ from app.model.model_loader import MushroomClassifier
 def create_app():
     app = Flask(__name__)
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static',"uploads")
+    app.config['WIKI_IMAGES'] = os.path.join(app.root_path, 'static', "wiki_images")
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    os.makedirs(app.config['WIKI_IMAGES'], exist_ok=True)
 
     def get_wiki_description(wiki_url):
         try:
@@ -68,12 +70,18 @@ def create_app():
         
         try:
             description = get_wiki_description(mushroom_data['url'])
+            image_path = os.path.join(app.config['WIKI_IMAGES'], f"{mushroom_id}.jpg")
+            if os.path.exists(image_path):
+                image_url = url_for('static', filename=f'wiki_images/{mushroom_id}.jpg')
+            else:
+                image_url = url_for('static', filename='test_images/what_is_grib.png')
             
             return jsonify({
                 "id": mushroom_id,
                 "name": mushroom_data['name'],
                 "edible": mushroom_data['edible'],
                 "description": description,
+                "image": image_url,
                 "wiki_url": mushroom_data['url']
             })
         except Exception as e:
@@ -83,6 +91,7 @@ def create_app():
                 "name": mushroom_data['name'],
                 "edible": mushroom_data['edible'],
                 "description": "Не удалось загрузить информацию",
+                "image": url_for('static', filename='test_images/what_is_grib.png'),
                 "wiki_url": mushroom_data['url']
             })
 

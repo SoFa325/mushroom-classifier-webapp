@@ -91,7 +91,7 @@
         </div>
     </div>
 
-    <!-- ✅ ИСПРАВЛЕННОЕ модальное окно с описанием -->
+    
     <div class="modal fade" id="mushroomModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -107,7 +107,7 @@
                                 <strong>Тип:</strong> 
                                 <span id="modalEdibility" class="badge"></span>
                             </p>
-                            <!-- ✅ ДОБАВЛЕН блок для описания -->
+                
                             <div class="description-text" id="modalDescription">
                                 <strong>Описание:</strong><br>
                                 <span id="descriptionText">Загрузка описания...</span>
@@ -153,6 +153,12 @@
                     const cardHtml = `
                         <div class="col-lg-4 col-md-6 mb-4 mushroom-card ${mushroom.edible ? 'edible' : 'poisonous'}">
                             <div class="card h-100">
+                                <div class="card-img-container" style="height: 200px; overflow: hidden;">
+                                    <img src="${mushroom.image}" class="card-img-top" 
+                                        alt="${mushroom.name}"
+                                        style="height: 100%; width: 100%; object-fit: cover;"
+                                        onerror="this.onerror=null;this.src='/static/test_images/what_is_grib.png'">
+                                </div>
                                 <div class="card-body">
                                     <h5 class="card-title">${mushroom.name}</h5>
                                     <p class="card-text">
@@ -160,6 +166,7 @@
                                             ${mushroom.edible ? 'Съедобный' : 'Ядовитый'}
                                         </span>
                                     </p>
+                                    <p class="card-text description-text">${mushroom.description || "Описание отсутствует"}</p>
                                     <button class="btn btn-sm ${mushroom.edible ? 'btn-success' : 'btn-danger'}"
                                             onclick="showMushroomDetails('${id}')"
                                             data-bs-toggle="modal" data-bs-target="#mushroomModal">
@@ -184,26 +191,23 @@
             }
         }
         
-        // ✅ ИСПРАВЛЕННАЯ функция отображения деталей
         function showMushroomDetails(mushroomId) {
             const mushroom = mushroomsData[mushroomId];
             if (!mushroom) return;
             
             document.getElementById('modalName').textContent = mushroom.name;
+            document.getElementById('modalDescription').textContent = mushroom.description || "Описание отсутствует";
             
             const edibilityBadge = document.getElementById('modalEdibility');
             edibilityBadge.textContent = mushroom.edible ? 'Съедобный' : 'Ядовитый';
             edibilityBadge.className = 'badge ' + (mushroom.edible ? 'badge-edible' : 'badge-poisonous');
             
-            // ✅ ДОБАВЛЕНО отображение описания
-            const descriptionElement = document.getElementById('descriptionText');
-            if (mushroom.description && mushroom.description !== "Не удалось загрузить описание") {
-                descriptionElement.textContent = mushroom.description;
-                document.getElementById('modalDescription').style.display = 'block';
-            } else {
-                descriptionElement.textContent = 'Описание временно недоступно';
-                document.getElementById('modalDescription').style.display = 'block';
-            }
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = mushroom.image;
+            modalImage.onerror = function() {
+                this.onerror = null;
+                this.src = '/static/test_images/what_is_grib.png';
+            };
             
             document.getElementById('modalWikiLink').href = mushroom.wiki_url;
         }

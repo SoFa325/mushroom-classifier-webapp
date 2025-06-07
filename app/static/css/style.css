@@ -57,3 +57,18 @@ body {
     background-color: #e9ecef;
     overflow: hidden;
 }
+
+.card-img-container {
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-img-top {
+    transition: transform 0.3s;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.05);
+}

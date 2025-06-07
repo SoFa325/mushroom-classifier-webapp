@@ -6,22 +6,22 @@ from collections import OrderedDict
 import os
 import json
 from pathlib import Path
+from mushroom_info import MUSHROOM_SPECIES
 
 class MushroomClassifier:
     def __init__(self):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = self._load_model()
-        self.class_names = self._load_class_names()
+        self.class_names = list(MUSHROOM_SPECIES.keys())
         self.transform = self._get_transforms()
-        self.russian_names = self._load_russian_names()
-    
-    def _load_russian_names(self):
-        path = Path(__file__).parent.parent / 'mushroom_names.json'
-        with open(path, 'r', encoding='utf-8') as f:
-            return json.load(f)
     
     def get_russian_name(self, latin_name):
-        return self.russian_names.get(latin_name, latin_name)
+        mushroom = MUSHROOM_SPECIES.get(latin_name, {})
+        return mushroom.get('name', latin_name)
+    
+    def is_edible(self, latin_name):
+        mushroom = MUSHROOM_SPECIES.get(latin_name, {})
+        return mushroom.get('edible', False)
 
     def _load_model(self):
         """Загрузка модели с весами"""
@@ -36,23 +36,12 @@ class MushroomClassifier:
 
         # Инициализация модели
         model = models.convnext_base(pretrained=False)
-        model.classifier[2] = torch.nn.Linear(model.classifier[2].in_features, 211)
+        model.classifier[2] = torch.nn.Linear(model.classifier[2].in_features, len(MUSHROOM_SPECIES))
         model.load_state_dict(new_state_dict)
         model.to(self.device)
         model.eval()
         
         return model
-
-    def _load_class_names(self):
-        try:
-            txt_path = os.path.join(os.path.dirname(__file__), '..', 'classes.txt')
-            with open(txt_path, 'r', encoding='utf-8') as f:
-                class_names = [line.strip() for line in f if line.strip()]
-            return class_names
-        except Exception as e:
-            print(f"Error loading class names: {e}")
-            # Фоллбек — генерация заглушек
-            return [f"class_{i}" for i in range(211)]
 
     def _get_transforms(self):
         """Трансформации для изображений"""
@@ -74,7 +63,7 @@ class MushroomClassifier:
 
             top_indices = probs.argsort()[-top_k:][::-1]
             return [
-                {"class": self.get_russian_name(self.class_names[i]), "probability": float(probs[i])} 
+                {"class": self.get_russian_name(self.class_names[i]), "probability": float(probs[i]), "edible": self.is_edible(self.class_names[i])} 
                 for i in top_indices
             ]
         except Exception as e:

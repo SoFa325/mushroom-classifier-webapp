@@ -125,11 +125,11 @@
                                     <div class="list-group-item {% if '(ядовитый)' in pred.class.lower() %}Ядовитый{% else %}Съедобный{% endif %} mb-2">
                                         <div class="d-flex w-100 justify-content-between">
                                             <h5 class="mb-1">{{ pred.class }}</h5>
-                                            <span class="toxicity-badge {% if '(ядовитый)' in pred.class.lower() %}bg-danger{% else %}bg-success{% endif %} text-white">
-                                                {% if '(ядовитый)' in pred.class.lower() %}
-                                                    Ядовитый
-                                                {% else %}
+                                            <span class="toxicity-badge {% if pred.edible %}bg-success{% else %}bg-danger{% endif %} text-white">
+                                                {% if pred.edible %}
                                                     Съедобный
+                                                {% else %}
+                                                    Ядовитый
                                                 {% endif %}
                                             </span>
                                         </div>
